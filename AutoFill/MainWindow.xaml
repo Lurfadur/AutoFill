@@ -5,14 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoFill"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="681">
     <Grid>
-        <Label x:Name="UserNameLabel" Content="Name:" HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.068,-0.615"/>
-        <TextBox x:Name="UserNameData" HorizontalAlignment="Left" Height="23" Margin="135,29,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="156"/>
-        <Label x:Name="DateLabel" Content="Date:" HorizontalAlignment="Left" Margin="10,75,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="UserNameLabel" Content="Name:" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.068,-0.615"/>
+        <TextBox x:Name="UserNameData" HorizontalAlignment="Left" Height="23" Margin="135,29,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170" TextChanged="UserNameData_TextChanged"/>
+        <Label x:Name="DateLabel" Content="Date:" HorizontalAlignment="Left" Margin="10,77,0,0" VerticalAlignment="Top"/>
         <DatePicker x:Name="SelectDateBox" HorizontalAlignment="Left" Margin="135,77,0,0" VerticalAlignment="Top" Width="120"/>
         <Label x:Name="OrderNumberLabel" Content="Order Number:" HorizontalAlignment="Left" Margin="10,122,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="OrderNumberData" HorizontalAlignment="Left" Height="23" Margin="135,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="OrderNumberData" HorizontalAlignment="Left" Height="23" Margin="135,125,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="OrderNumberData_TextChanged"/>
+        <Button x:Name="SelectExcelButton" Content="Select Excel File" HorizontalAlignment="Left" Margin="10,187,0,0" VerticalAlignment="Top" Width="90"/>
+        <TextBox x:Name="ExcelFilePath" HorizontalAlignment="Left" Height="23" Margin="135,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="257" IsEnabled="False"/>
+        <Button x:Name="SelectWordButton" Content="Select Word File" HorizontalAlignment="Left" Margin="10,233,0,0" VerticalAlignment="Top" Width="90"/>
+        <TextBox x:Name="WordFilePath" HorizontalAlignment="Left" Height="23" Margin="135,230,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="257" IsEnabled="False"/>
+        <Button x:Name="SaveChangesButton" Content="Save Changes" HorizontalAlignment="Left" Margin="10,312,0,0" VerticalAlignment="Top" Width="90"/>
+        <Button x:Name="PrintButton" Content="Print" HorizontalAlignment="Left" Margin="262,312,0,0" VerticalAlignment="Top" Width="90"/>
 
     </Grid>
 </Window>
