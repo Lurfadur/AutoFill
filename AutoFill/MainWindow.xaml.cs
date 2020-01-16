@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Win32;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace AutoFill
 {
@@ -20,7 +10,6 @@ namespace AutoFill
     /// </summary>
     public partial class MainWindow : Window
     {
-        // Class contains data information
         class WorkOrder
         {
             public string Name
@@ -85,7 +74,6 @@ namespace AutoFill
 
         // Create new WorkOrder object
         WorkOrder newOrder = new WorkOrder();
-        string EXCEL_PATH = "";
 
         public MainWindow()
         {
@@ -114,16 +102,50 @@ namespace AutoFill
         {
             var picker = sender as DatePicker;
             DateTime? date = picker.SelectedDate;
-            if (date == null)
-            {
-                
-            }
-            else
+            if (date != null)
             {
                 newOrder.Date = date.Value.ToShortDateString();
             }
+        }
+
+        private void SelectExcelButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "All Files (*.*)|*.*";
+            openFile.FilterIndex = 1;
+            openFile.Multiselect = false;
+
+            if (openFile.ShowDialog() == true)
+            {
+                newOrder.ExcelPath = openFile.FileName;
+                ExcelFilePath.Text = newOrder.ExcelPath;
+            }
+        }
+
+        private void SelectWordButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Filter = "All Files (*.*)|*.*";
+            openFile.FilterIndex = 1;
+            openFile.Multiselect = false;
+
+            if (openFile.ShowDialog() == true)
+            {
+                newOrder.WordPath = openFile.FileName;
+                WordFilePath.Text = newOrder.WordPath;
+            }
+        }
+
+        private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO: Use MS Interop to update Excel and Word files to keep their existing data and formatting intact
 
         }
-        
+
+        private void PrintButton_Click(object sender, RoutedEventArgs e)
+        {
+            PrintDialog printDialog = new PrintDialog();
+            printDialog.UserPageRangeEnabled = true;
+        }
     }
 }
