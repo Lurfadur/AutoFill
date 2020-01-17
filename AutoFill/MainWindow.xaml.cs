@@ -29,14 +29,16 @@ namespace AutoFill
             InitializeComponent();
         }
 
-        public bool IsBadInput(string s)
+        public bool NameIsValid(string s)
         {
-            if (String.IsNullOrEmpty(s))
+            foreach (char letter in s)
             {
-                return false;
+                if (Char.IsDigit(letter) && Char.IsWhiteSpace(letter) == false)
+                {
+                    return false;
+                }
             }
-            int i;
-            return Int32.TryParse(s, out i);
+            return true;
         }
 
         private void UserNameData_TextChanged(object sender, TextChangedEventArgs e)
@@ -99,11 +101,17 @@ namespace AutoFill
         private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
         {
             // Do data validation first
-            if (IsBadInput(newOrder.Name))
+            // Check that Name is valid
+            if (!NameIsValid(newOrder.Name))
             {
                 MessageBox.Show("Name can not contain numbers.", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
                 UserNameData.Clear();
+                return;
             }
+
+            // Check that Date is valid
+
+            // Check that Order number is valid
 
             // Create Excel object
             office.Excel.Application xlApp;
