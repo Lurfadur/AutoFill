@@ -1,7 +1,9 @@
 ﻿using Microsoft.Win32;
+using office = Microsoft.Office.Interop;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Runtime.InteropServices;
 
 namespace AutoFill
 {
@@ -12,64 +14,11 @@ namespace AutoFill
     {
         class WorkOrder
         {
-            public string Name
-            {
-                get { return Name; }
-                set
-                {
-                    if (value == "")
-                    {
-                        throw new ArgumentException("Name must not be empty.");
-                    }
-                    foreach (char item in value)
-                    {
-                        if (char.IsDigit(item))
-                        {
-                            throw new ArgumentException("Digits are not allowed.");
-                        }
-                    }
-                    Name = value;
-                }
-            }
-            public string Date
-            {
-                get { return Date; }
-                set
-                {
-                    if (value != null)
-                    {
-                        Date = value;
-                    }
-                }
-            }
-            public string OrderNumber
-            {
-                get { return OrderNumber; }
-                set
-                {
-                    if (value == "")
-                    {
-                        throw new ArgumentException("Order number must not be empty.");
-                    }
-                    OrderNumber = value;
-                }
-            }
-            public string WordPath
-            {
-                get { return WordPath; }
-                set
-                {
-                    WordPath = value;
-                }
-            }
-            public string ExcelPath
-            {
-                get { return ExcelPath; }
-                set
-                {
-                    ExcelPath = value;
-                }
-            }
+            public string Name { get; set; }
+            public string Date { get; set; }
+            public string OrderNumber { get; set; }
+            public string WordPath { get; set; }
+            public string ExcelPath{ get; set; }
         }
 
         // Create new WorkOrder object
@@ -80,12 +29,23 @@ namespace AutoFill
             InitializeComponent();
         }
 
+        public bool IsBadInput(string s)
+        {
+            if (String.IsNullOrEmpty(s))
+            {
+                return false;
+            }
+            int i;
+            return Int32.TryParse(s, out i);
+        }
+
         private void UserNameData_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             if (textBox != null)
             {
-                newOrder.Name = textBox.Text.ToString();
+                string name = textBox.Text.ToString();
+                newOrder.Name = name;
             }
         }
 
@@ -138,8 +98,40 @@ namespace AutoFill
 
         private void SaveChangesButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Use MS Interop to update Excel and Word files to keep their existing data and formatting intact
+            // Do data validation first
+            if (IsBadInput(newOrder.Name))
+            {
+                MessageBox.Show("Name can not contain numbers.", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                UserNameData.Clear();
+            }
 
+            // Create Excel object
+            office.Excel.Application xlApp;
+            office.Excel.Workbook xlWorkBook;
+            office.Excel.Worksheet xlWorkSheet;
+
+            xlApp = new office.Excel.Application();
+            xlWorkBook = xlApp.Workbooks.Open(newOrder.ExcelPath);
+
+            xlWorkSheet = (office.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+
+            // Update data entered from user for Excel
+            xlWorkSheet.Cells[1, 2] = newOrder.Name;
+            xlWorkSheet.Cells[2, 2] = newOrder.Date;
+            xlWorkSheet.Cells[3, 2] = newOrder.OrderNumber;
+            xlWorkBook.Save();
+
+            // Update data entered from user for Word
+
+
+            // Release COM resources
+            // Excel
+            xlApp.Quit();
+            Marshal.ReleaseComObject(xlWorkSheet);
+            Marshal.ReleaseComObject(xlWorkBook);
+            Marshal.ReleaseComObject(xlApp);
+
+            // Word
         }
 
         private void PrintButton_Click(object sender, RoutedEventArgs e)
