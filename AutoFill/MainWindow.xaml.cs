@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace AutoFill
 {
@@ -31,16 +32,104 @@ namespace AutoFill
 
         public bool NameIsValid(string s)
         {
-            foreach (char letter in s)
+            if (String.IsNullOrEmpty(s))
             {
-                if (Char.IsDigit(letter) && Char.IsWhiteSpace(letter) == false)
+                return false;
+            }
+
+            // May only contain a-z and white space
+            return Regex.IsMatch(s, @"^[a-zA-Z -]+$");
+        }
+
+        public bool DateIsValid(string date)
+        {
+            if (String.IsNullOrEmpty(date))
+            {
+                return false;
+            }
+
+            char[] delimiterChars = { '-', '/', '.' };
+            string[] words = date.Split(delimiterChars);
+
+            // check month
+            if (Int32.TryParse(words[0], out int monthVal))
+            {
+                if ((monthVal < 1 || monthVal > 12))
                 {
                     return false;
                 }
             }
+
+            // check year
+            if (Int32.TryParse(words[2], out int yearVal))
+            {
+                if (yearVal < DateTime.Now.Year)
+                {
+                    return false;
+                }
+            }
+
+            // check day
+            if (Int32.TryParse(words[1], out int dayVal))
+            {
+                if (dayVal < 1)
+                {
+                    return false;
+                }
+
+                // check for leap year
+                if (monthVal == 2 && DateTime.IsLeapYear(yearVal))
+                {
+                    if (dayVal > 29)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    // check for February
+                    if (monthVal == 2 && dayVal > 28)
+                    {
+                        return false;
+                    }
+
+                    // months with only 30 days
+                    if (monthVal == 4 ||
+                        monthVal == 6 ||
+                        monthVal == 9 ||
+                        monthVal == 11)
+                    {
+                        if (dayVal > 30)
+                        {
+                            return false;
+                        }
+                    }
+
+                    // check for months with only 31 days 
+                    else if (monthVal == 1 || 
+                        monthVal == 3 ||
+                        monthVal == 5 || 
+                        monthVal == 7 ||
+                        monthVal == 8 ||
+                        monthVal == 10 ||
+                        monthVal == 12)
+                    {
+                        if (dayVal > 31)
+                        {
+                            return false;
+                        }
+                    }
+
+                    // current month does not exist
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
             return true;
         }
-
         private void UserNameData_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -104,13 +193,17 @@ namespace AutoFill
             // Check that Name is valid
             if (!NameIsValid(newOrder.Name))
             {
-                MessageBox.Show("Name can not contain numbers.", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Name can not be empty or contain numbers.", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
                 UserNameData.Clear();
                 return;
             }
 
             // Check that Date is valid
-
+            if (!DateIsValid(newOrder.Date))
+            {
+                MessageBox.Show("The date is incorrect", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
             // Check that Order number is valid
 
             // Create Excel object
