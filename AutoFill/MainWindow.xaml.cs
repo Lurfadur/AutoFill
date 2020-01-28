@@ -130,6 +130,16 @@ namespace AutoFill
 
             return true;
         }
+
+        public bool OrderIsValid(string order)
+        {
+            if (string.IsNullOrEmpty(order))
+            {
+                return false;
+            }
+            return true;
+        }
+
         private void UserNameData_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -151,9 +161,9 @@ namespace AutoFill
 
         private void SelectDateBox_ValueChanged(object sender, EventArgs e)
         {
-            var picker = sender as DatePicker;
-            DateTime? date = picker.SelectedDate;
-            if (date != null)
+            //var picker = sender as DatePicker;
+            DateTime? date = SelectDateBox.SelectedDate;
+            if (date.HasValue)
             {
                 newOrder.Date = date.Value.ToShortDateString();
             }
@@ -201,10 +211,15 @@ namespace AutoFill
             // Check that Date is valid
             if (!DateIsValid(newOrder.Date))
             {
-                MessageBox.Show("The date is incorrect", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("The date is incorrect.", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            // Check that Order number is valid
+            // Check that the Order number is valid
+            if (!OrderIsValid(newOrder.OrderNumber))
+            {
+                MessageBox.Show("The order number is incorrect.", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
 
             // Create Excel object
             office.Excel.Application xlApp;
@@ -216,29 +231,37 @@ namespace AutoFill
 
             xlWorkSheet = (office.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
 
-            // Update data entered from user for Excel
+            // Update data entered from user into Excel
             xlWorkSheet.Cells[1, 2] = newOrder.Name;
             xlWorkSheet.Cells[2, 2] = newOrder.Date;
             xlWorkSheet.Cells[3, 2] = newOrder.OrderNumber;
             xlWorkBook.Save();
 
-            // Update data entered from user for Word
-
-
-            // Release COM resources
-            // Excel
+            // Release Excel resources
             xlApp.Quit();
             Marshal.ReleaseComObject(xlWorkSheet);
             Marshal.ReleaseComObject(xlWorkBook);
             Marshal.ReleaseComObject(xlApp);
 
-            // Word
+            // Create Word object
+
+
+            // Update data entered from user for Word
+
+
+            // Release Word resources
+
+            // Set ability to print
+            PrintButton.IsEnabled = true;
         }
 
         private void PrintButton_Click(object sender, RoutedEventArgs e)
         {
             PrintDialog printDialog = new PrintDialog();
             printDialog.UserPageRangeEnabled = true;
+
+            // After printing is completed, disable button again
+            PrintButton.IsEnabled = false;
         }
     }
 }
